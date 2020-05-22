@@ -58,7 +58,7 @@
                     clear container and data
                 */
 
-                let spans = document.querySelectorAll('span');
+                spans = document.querySelectorAll('span'); // some mutation
                 spans.forEach((element, index) => {
                     element.remove();
                 });
