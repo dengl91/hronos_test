@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Hronos test</title>
+</head>
+<body>
+
+    <script>
+        let body = document.getElementsByTagName('body')[0];
+
+        /*
+            creating and render main input
+        */
+
+        let input = document.createElement('input');
+        input.type = 'number';
+        input.min = '1';
+
+        body.appendChild(input);
+
+        let spans = body.appendChild( document.createElement('div') );
+        spans.id = 'spans-container';
+        
+        let spans_cont = document.getElementById('spans-container');
+
+        let nav_cont = body.appendChild( document.createElement('div') );
+        nav_cont.classList.add('nav');
+
+        /*
+            set empty data
+        */
+
+        let create_elements = null;
+        let hundreds = null;
+        let rand_array = [];
+
+        /*
+            prevent input from unwanted characters
+        */
+
+        input.addEventListener('keydown', (event) => {
+            if ( event.which != 8 && event.which != 0 && event.which < 48 || event.which > 57 ) {
+                event.preventDefault();
+            }
+        });
+
+        input.addEventListener('keyup', (event) => {
+            if ( event.which != 8 && event.which != 0 && event.which < 48 || event.which > 57 ) {
+                return;
+            } else {
+
+                clearTimeout(create_elements);
+
+                /*
+                    clear container and data
+                */
+
+                let spans = document.querySelectorAll('span');
+                spans.forEach((element, index) => {
+                    element.remove();
+                });
+                rand_array = [];
+                console.clear();
+
+                const input_value = event.target.value;
+
+                if ( input_value <= 10000 ) {
+
+                    create_elements = setTimeout(function () {
+
+                        /*
+                            creating random array
+                        */
+
+                        for ( let r = 0; r < input_value; r++ ) {
+                            rand_array.push( Math.floor(Math.random() * 10) );
+                        }
+                        console.log(rand_array);
+
+                        /*
+                            set max render elements
+                        */
+
+                        if ( input_value < 100) {
+                            input_limit = input_value;
+                        } else {
+                            input_limit = 100;
+                        }
+
+                        /*
+                            create and render first elements
+                        */
+
+                        for ( let i = 0; i < input_limit; i++ ) {
+                            const span = document.createElement('span');
+                            span.innerText = rand_array[i];
+                            spans_cont.appendChild(span);
+                        }
+
+                        /*
+                            check for navigation
+                        */
+
+                        if ( input_value > 100 ) {
+
+                            /*
+                                check integer navigation items
+                            */
+
+                            const hundreds = Math.ceil(input_value / 100);
+                            
+                            for ( let h = 0; h < hundreds; h++ ) {
+
+                                /*
+                                    create navigation
+                                */
+
+                                const h_nav = document.createElement('span');
+                                h_nav.classList.add('nav');
+                                if ( h == 0 ) {
+                                    h_nav.classList.add('label');
+                                }
+                                h_nav.innerText = h + 1;
+
+                                /*
+                                    add behavior
+                                */
+
+                                h_nav.addEventListener('click', (event) => {
+                                    spans_cont.innerHTML = '';
+                                    const page = event.target.innerText;
+                                    if ( (page * 100) > rand_array.length ) {
+                                        page_limit = rand_array.length;
+                                    } else {
+                                        page_limit = page * 100;
+                                    }
+                                    for ( let p = (page - 1) * 100 ; p < page_limit ; p++ ) {
+                                        const span = document.createElement('span');
+                                        span.innerText = rand_array[p];
+                                        spans_cont.appendChild(span);
+                                    }
+                                });
+
+                                /*
+                                    render navigation
+                                */
+
+                                nav_cont.appendChild(h_nav);
+                            }
+                        }
+
+                    }, 400);
+                    
+                } else {
+
+                    /*
+                        if elements more than 10000
+                    */
+
+                    alert('Извините, столько элементов не обработать. Максимальное значение - 10000');
+                    input.value = '';
+                    let spans = document.querySelectorAll('span');
+                    spans.forEach((element, index) => {
+                        element.remove();
+                    });
+                    return;
+
+                }
+            }
+        });
+
+        /*
+            some background
+        */
+
+        document.addEventListener("DOMContentLoaded", () => {
+            fetch('https://source.unsplash.com/1600x900/?nature').then( (response) => {   
+                let img = document.createElement('img');
+                img.classList.add('bg-img');
+                img.src = response.url;
+                body.appendChild(img);
+            })
+        });
+    </script>
+
+    <!-- unnecessary styles -->
+
+    <style>
+        body {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            display: -webkit-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0;
+            margin: 0;
+            position: relative;
+        }
+        * {
+            box-sizing: border-box;
+        }
+        input {
+            width: 100%;
+            max-width: 1140px;
+            font-size: 15px;
+            line-height: 52px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 0 20px;
+            margin: 10vh 0;
+        }
+        #spans-container {
+            width: 100%;
+            max-width: 1140px;
+            height: 180px;
+            display: flex;
+            flex-wrap: wrap;
+        }
+        #spans-container span {
+            width: 24px;
+            height: 24px;
+            font-family: sans-serif;
+            text-align: center;
+            line-height: 24px;
+            background: #fff;
+            border-radius: 4px;
+            margin: 10px;
+        }
+        div.nav {
+            width: 100%;
+            max-width: 1140px;
+            display: flex;
+            display: -webkit-flex;
+            flex-wrap: wrap;
+        }
+        div.nav span.nav {
+            width: 32px;
+            height: 32px;
+            font-family: sans-serif;
+            font-size: 14px;
+            color: #fff;
+            font-weight: 600;
+            text-align: center;
+            line-height: 32px;
+            background: #47AF48;
+            border-radius: 8px;
+            margin: 10px;
+            position: relative;
+            cursor: pointer;
+        }
+        div.nav span.nav.active {
+            background: #333;
+            cursor: default;
+        }
+        div.nav span.nav.label:after {
+            content: 'Навигация';
+            font-size: 14px;
+            color: #fff;
+            font-weight: 600;
+            position: absolute;
+            top: 0;
+            right: 42px;
+        }
+        .bg-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            filter: brightness(0.5);
+            z-index: -9;
+        }
+    </style>
+    
+</body>
+</html>
